@@ -54,6 +54,12 @@ def get_cluster_from_instance_tag(instance_id):
         print(e)
     return None
 
+def complete_lifecycle_action(msg):
+    ASG.complete_lifecycle_action(LifecycleHookName=msg['LifecycleHookName'],
+                                AutoScalingGroupName=msg['AutoScalingGroupName'],
+                                LifecycleActionResult='CONTINUE',
+                                InstanceId=msg['EC2InstanceId'])
+
 def lambda_handler(event, context):
     msg = json.loads(event['Records'][0]['Sns']['Message'])
 
@@ -65,10 +71,7 @@ def lambda_handler(event, context):
     cluster = get_cluster_from_instance_tag(msg['EC2InstanceId'])
     if cluster is None:
         print('Did not find ECS cluster for instance %s, exiting' % msg['EC2InstanceId'])
-        ASG.complete_lifecycle_action(LifecycleHookName=msg['LifecycleHookName'],
-                                    AutoScalingGroupName=msg['AutoScalingGroupName'],
-                                    LifecycleActionResult='CONTINUE',
-                                    InstanceId=msg['EC2InstanceId'])        
+        complete_lifecycle_action(msg)
         return
     else:
         print('Draining instance %s in cluster %s' % (msg['EC2InstanceId'], cluster))
@@ -85,7 +88,4 @@ def lambda_handler(event, context):
         print('No tasks are running on instance %s; setting lifecycle to complete' %
             (msg['EC2InstanceId']))
 
-        ASG.complete_lifecycle_action(LifecycleHookName=msg['LifecycleHookName'],
-                                    AutoScalingGroupName=msg['AutoScalingGroupName'],
-                                    LifecycleActionResult='CONTINUE',
-                                    InstanceId=msg['EC2InstanceId'])
+        complete_lifecycle_action(msg)
