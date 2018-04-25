@@ -10,13 +10,14 @@ are no tasks running on it.
 
 ## Usage
 
-### Deployment
+The drainer is a standalone component deployable on its own. AN ECS cluster integrating with the drainer will need some additional resources provisioned. 
+### Drainer Deployment
 
 Deploy this lambda function with `sls deploy` (you'll need serverless framework from `npm i -g serverless`)
 
-### Invocation
+### ECS Cluster Deployment
 
-To set this up for invocation by an auto scaling group lifecycle hook, provision the following resources (given here as a CloudFormation snippet):
+To set this up for invocation by an auto scaling group lifecycle hook, provision the following resources along with your ECS cluster (given here as a CloudFormation snippet):
 
 ```yaml
 
@@ -85,4 +86,19 @@ Resources:
        Principal: "sns.amazonaws.com"
        SourceArn: !Ref ASGSNSTopic
 
+```
+
+Also make sure your ECS instances have a tag with key `ECSCluster` and the cluster name as the tag value. The drainer function will look up the cluster this way based on the EC2 instance id contained in the lifecycle hook notification message.
+
+```yaml
+  ECSAutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      ...
+      Tags:
+        ...
+        - Key: ECSCluster
+          Value: !Ref ECSCluster
+          PropagateAtLaunch: true
+      ...
 ```
