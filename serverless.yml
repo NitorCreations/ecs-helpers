@@ -1,11 +1,11 @@
-service: ecs-instance-drainer
+service: ecs-helpers
 
 # frameworkVersion: "=X.X.X"
 
 provider:
   name: aws
   runtime: python3.6
-  stage: dev
+  stage: prod
   region: eu-west-1
   iamRoleStatements:
     - Effect: "Allow"
@@ -16,14 +16,24 @@ provider:
         - ecs:UpdateContainerInstancesState
         - sns:Publish
         - ec2:DescribeInstances
+        - ssm:PutParameter
       Resource: "*"
+
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  region: ${opt:region, self:provider.region}
 
 package:
   exclude:
     - ./**
   include:
     - handler.py
+    - amiupdate.py
 
 functions:
   ecs-instance-drainer:
     handler: handler.lambda_handler
+  ecs-ami-update:
+    handler: amiupdate.lambda_handler
+    events:
+      - sns: arn:aws:sns:${self:custom.region}:177427601217:ecs-optimized-amazon-ami-update
