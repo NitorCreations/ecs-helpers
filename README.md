@@ -1,4 +1,7 @@
-# Drain ECS instances on termination
+# Helper functions for ECS clusters
+
+A set of helper Lambda functions for EC2 instance based ECS clusters.
+## ecs-instance-drainer
 
 This lambda function automates setting ECS instances to draining state using an auto scaling
 lifecycle hook when instances are due to be terminated. 
@@ -8,20 +11,31 @@ Common scenarios are rolling AMI updates or autoscaling scale in operations. By 
 instance first, ECS relocates tasks on other instances and only terminates an instance when there
 are no tasks running on it.
 
-## Usage
+## ecs-ami-update
 
-The drainer is a standalone component deployable on its own. AN ECS cluster integrating with the drainer will need some additional resources provisioned. 
-### Drainer Deployment
+This function subscribes to the ECS AMI update SNS notification topic and writes the latest AMI id to an SSM parameter as string value. You can reference this SSM parameter directly from a CloudFormation stack parameter.
+
+AWS provides SSM parameters for the ECS AMIs as well. The difference here is the value of the SSM parameter is a simple string instead of a JSON structure which would have to be further parsed.
+# Usage
+
+ECS Helpers is a standalone component deployable on its own. AN ECS cluster integrating with the drainer will need some additional resources provisioned. 
+## ECS Helpers Deployment
 
 Deploy this lambda function with `sls deploy` (you'll need serverless framework from `npm i -g serverless`)
 
-### ECS Cluster Deployment
+## ECS Cluster Deployment
 
 To set this up for invocation by an auto scaling group lifecycle hook, provision the following resources along with your ECS cluster (given here as a CloudFormation snippet):
 
 ```yaml
 
 Parameters:
+
+  # To use the latest AMI id provided by ecs-ami-update:
+  paramHostAmiId:
+    Description: AMI Id for ECS Hosts. See http://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: ECS_AMI_ID # This SSM parameter is maintained by ecs-ami-update lambda
 
   paramECSDrainerLambdaArn:
     Description: ARN for ECS drainer lambda function
