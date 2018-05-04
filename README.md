@@ -23,7 +23,7 @@ You can configure webhooks that will be triggered when an AMI update is handled.
 
 Create a SecureString SSM Parameter (`/ecs-helpers/webhooks` by default) and use the following JSON structure as parameter value:
 
-```javascript
+```JSON
 [
     {
         "url": "https://gitlab.com/api/v4/projects/your_project_id/trigger/pipeline",
