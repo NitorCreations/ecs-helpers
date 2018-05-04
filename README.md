@@ -13,9 +13,28 @@ are no tasks running on it.
 
 ## ecs-ami-update
 
-This function subscribes to the ECS AMI update SNS notification topic and writes the latest AMI id to an SSM parameter as string value. You can reference this SSM parameter directly from a CloudFormation stack parameter.
+This function subscribes to the ECS AMI update SNS notification topic and writes the latest AMI id to an SSM parameter (default: `/ecs-helpers/ECS_AMI_ID`) as string value. You can reference this SSM parameter directly from a CloudFormation stack parameter.
 
 AWS provides SSM parameters for the ECS AMIs as well. The difference here is the value of the SSM parameter is a simple string instead of a JSON structure which would have to be further parsed.
+
+### Trigger Deployments With Webhooks
+
+You can configure webhooks that will be triggered when an AMI update is handled.
+
+Create a SecureString SSM Parameter (`/ecs-helpers/webhooks` by default) and use the following JSON structure as parameter value:
+
+```json
+[
+    {
+        "url": "https://gitlab.com/api/v4/projects/your_project_id/trigger/pipeline",
+        "data": {
+            "ref": "master",
+            "token": "your_token_here"
+        }
+    }
+]
+```
+
 # Usage
 
 ECS Helpers is a standalone component deployable on its own. AN ECS cluster integrating with the drainer will need some additional resources provisioned. 
@@ -35,7 +54,7 @@ Parameters:
   paramHostAmiId:
     Description: AMI Id for ECS Hosts. See http://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html
     Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
-    Default: ECS_AMI_ID # This SSM parameter is maintained by ecs-ami-update lambda
+    Default: /ecs-helpers/ECS_AMI_ID # This SSM parameter is maintained by ecs-ami-update lambda
 
   paramECSDrainerLambdaArn:
     Description: ARN for ECS drainer lambda function

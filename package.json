@@ -1,0 +1,27 @@
+{
+  "name": "ecs-helpers",
+  "version": "1.0.0",
+  "description": "A set of helper Lambda functions for EC2 instance based ECS clusters. ## ecs-instance-drainer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NitorCreations/ecs-helpers.git"
+  },
+  "keywords": [
+    "aws",
+    "ecs",
+    "lambda"
+  ],
+  "author": "Mika Majakorpi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NitorCreations/ecs-helpers/issues"
+  },
+  "homepage": "https://github.com/NitorCreations/ecs-helpers#readme",
+  "devDependencies": {
+    "serverless-python-requirements": "^4.0.2"
+  }
+}
