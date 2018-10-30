@@ -52,7 +52,7 @@ Parameters:
 
   # To use the latest AMI id provided by ecs-ami-update:
   paramHostAmiId:
-    Description: AMI Id for ECS Hosts. See http://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html
+    Description: AMI Id for ECS Hosts. See https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html
     Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
     Default: /ecs-helpers/ECS_AMI_ID # This SSM parameter is maintained by ecs-ami-update lambda
 

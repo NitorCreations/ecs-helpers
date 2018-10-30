@@ -22,6 +22,6 @@
   },
   "homepage": "https://github.com/NitorCreations/ecs-helpers#readme",
   "devDependencies": {
-    "serverless-python-requirements": "^4.0.2"
+    "serverless-python-requirements": "4.2.4"
   }
 }
